@@ -1,18 +1,26 @@
-%working solution - identical to 8 point algorithm code for lecture - need
-%to figure out what needs changed to differentiate it.
-
-function [] = ComputeEpipolar()
+function [] = computeEpipolar(x, y, z, frame)
 load 'Subject4-Session3-Take4_mocapJoints.mat' mocapJoints
 load 'vue2CalibInfo.mat' vue2
 load 'vue4CalibInfo.mat' vue4
-%needs to read in video files in main
+filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2.mp4';
+filenamevue4mp4 = 'Subject4-Session3-24form-Full-Take4-Vue4.mp4';
+
+  %initialization of VideoReader for the vue2 video.
+     vue2Video = VideoReader(filenamevue2mp4);
+    vue4Video = VideoReader(filenamevue4mp4);
+%    vue2Video.CurrentTime = (frame-1)*(50/100)/vue2Video.FrameRate;
+%    vue4Video.CurrentTime = (frame-1)*(50/100)/vue4Video.FrameRate;
+    vid2Frame = readFrame(vue2Video);
+    vid4Frame = readFrame(vue4Video);
+    figure(frame);
+%    set(gcf, 'Position',  [100, 100, 1000, 400])
 
 %initialize color lines
 colors =  'bgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmyk';
 
 %retrieves epipolar points for video 1
-figure(1); [x1,y1] = getpts;
-figure(1); imagesc(im); axis image; hold on
+figure(frame); [x1,y1] = getpts;
+figure(frame); imagesc(vid2Frame); axis image; hold on
 for i=1:length(x1)
    h=plot(x1(i),y1(i),'*'); set(h,'Color','g','LineWidth',2);
    text(x1(i),y1(i),sprintf('%d',i));
@@ -21,9 +29,9 @@ hold off
 drawnow;
 
 %retrieves epipolar points for video 2
-figure(2); imagesc(im2); axis image; drawnow;
+figure(frame); imagesc(vid4frame); axis image; drawnow;
 [x2,y2] = getpts;
-figure(2); imagesc(im2); axis image; hold on
+figure(frame); imagesc(vid4frame); axis image; hold on
 for i=1:length(x2)
    h=plot(x2(i),y2(i),'*'); set(h,'Color','g','LineWidth',2);
    text(x2(i),y2(i),sprintf('%d',i));
@@ -69,8 +77,8 @@ F = T2' * F * T1;
 
 %overlay epipolar lines on im2
 L = F * [x1' ; y1'; ones(size(x1'))];
-[nr,nc,nb] = size(im2);
-figure(2); clf; imagesc(im2); axis image;
+[nr,nc,nb] = size(vid4frame);
+figure(frame); clf; imagesc(vid4frame); axis image;
 hold on; plot(x2,y2,'*'); hold off
 for i=1:length(L)
     a = L(1,i); b = L(2,i); c=L(3,i);
@@ -98,8 +106,8 @@ end
 
 %overlay epipolar lines on im1
 L = ([x2' ; y2'; ones(size(x2'))]' * F)' ;
-[nr,nc,nb] = size(im);
-figure(1); clf; imagesc(im); axis image;
+[nr,nc,nb] = size(vid2frame);
+figure(1); clf; imagesc(vid2frame); axis image;
 hold on; plot(x1,y1,'*'); hold off
 for i=1:length(L)
     a = L(1,i); b = L(2,i); c=L(3,i);

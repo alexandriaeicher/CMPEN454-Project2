@@ -49,6 +49,8 @@ for mocapFnum = 700:700 %size(mocapJoints, 1)
         % end plotting of points
         
         % recostruct3DFrom2D
+        %recovered3DPoints = reconstruct3DFrom2D(vue2, points2D2, vue4, points2D4);
+        
     end
 end
 

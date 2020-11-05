@@ -1,4 +1,19 @@
-[EpipolarLines1, EpipolarLines2] = findEpipolarLines(worldCoord3DPoints, cam1, cam1PixelCoords, cam2, cam2PixelCoords)
+function [] = computeEpipolar(x, y, z, frame)
+load 'Subject4-Session3-Take4_mocapJoints.mat' mocapJoints
+load 'vue2CalibInfo.mat' vue2
+load 'vue4CalibInfo.mat' vue4
+filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2.mp4';
+filenamevue4mp4 = 'Subject4-Session3-24form-Full-Take4-Vue4.mp4';
+
+  %initialization of VideoReader for the vue2 video.
+     vue2Video = VideoReader(filenamevue2mp4);
+    vue4Video = VideoReader(filenamevue4mp4);
+%    vue2Video.CurrentTime = (frame-1)*(50/100)/vue2Video.FrameRate;
+%    vue4Video.CurrentTime = (frame-1)*(50/100)/vue4Video.FrameRate;
+    vid2Frame = readFrame(vue2Video);
+    vid4Frame = readFrame(vue4Video);
+    figure(frame);
+%    set(gcf, 'Position',  [100, 100, 1000, 400])
 
 %initialize color lines
 colors =  'bgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmyk';
@@ -124,4 +139,3 @@ for j=1:3
     end
     fprintf('\n');
 end
-

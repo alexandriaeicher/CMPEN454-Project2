@@ -1,8 +1,14 @@
 function [EpipolarLines1, EpipolarLines2] = findEpipolarLines(...
     worldCoord3DPoints, cam1, cam1PixelCoords, cam2, cam2PixelCoords)
-filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2.mp4';
+filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2_updated.mp4';
 
 disp(cam1PixelCoords)
+
+for i = 1:12
+    x1=cam1PixelCoords(1, i)
+end
+
+disp(x1)
 
 Rmat1 = cam1.Rmat;
     Rtranspose1 = transpose(Rmat1);
@@ -75,27 +81,57 @@ Rmat1 = cam1.Rmat;
         recovered3DPoints(2,i) = -p(2);
         recovered3DPoints(3,i) = -p(3);
         
+        %do Hartley preconditioning
+ %   savx1 = x1; savy1 = y1; savx2 = x2; savy2 = y2;
+ %   mux = mean(x1);
+ %   muy = mean(y1);
+ %   stdxy = (std(x1)+std(y1))/2;
+ %   T1 = [1 0 -mux; 0 1 -muy; 0 0 stdxy]/stdxy;
+ %   nx1 = (x1-mux)/stdxy;
+ %   ny1 = (y1-muy)/stdxy;
+ %   mux = mean(x2);
+ %   muy = mean(y2);
+ %   stdxy = (std(x2)+std(y2))/2;
+ %   T2 = [1 0 -mux; 0 1 -muy; 0 0 stdxy]/stdxy;
+ %   nx2 = (x2-mux)/stdxy;
+ %   ny2 = (y2-muy)/stdxy;
+        
         A = [];
         for i=1:8;
             %disp(cam1PixelCoords(i))
             %disp(cam1PixelCoords(i,2))
             A(i,:) = [cam1PixelCoords(i)*cam2PixelCoords(i) cam1PixelCoords(i)*cam1PixelCoords(i) cam1PixelCoords(i) cam1PixelCoords(i)*cam2PixelCoords(i) cam1PixelCoords(i)*cam2PixelCoords(i) cam1PixelCoords(i) cam2PixelCoords(i) cam2PixelCoords(i) 1];
         end
-     
-        %get eigenvector associated with smallest eigenvalue of A' * A
-        [u,d] = eigs((A' * A), 1,'SM');
-        disp(u)
-        F = reshape(u,3,3);
+        
+        [~, ~, V] = svd(A);
+        F = reshape(V(:,9), 3, 3)';
+        
+        
+        [U, D, V] = svd(F);
+        D(3,3) = 0; %rank 2 constrains
+        F = U*D*V';
+        
         disp(F)
         
+        % rescale fundamental matrix
+        F = T2' * F * T1;
+        
+      
+     
+        %get eigenvector associated with smallest eigenvalue of A' * A
+       % [u,d] = eigs((A' * A), 1,'SM');
+       % disp(u)
+       % F = reshape(u,3,3);
+       % disp(F)
+        
         %make F rank 2
-        oldF = F;
-        [U,D,V] = svd(F);
-        D(3,3) = 0;
-        F = U * D * V';
+     %   oldF = F;
+     %   [U,D,V] = svd(F);
+     %   D(3,3) = 0;
+     %   F = U * D * V';
         
         %unnormalize F to undo the effects of Hartley preconditioning
-        F = T2' * F * T1;
+      %  F = T2' * F * T1;
 
 % plot points2D2 and points2D4 onto frame
 vue2Video = VideoReader(filenamevue2mp4);

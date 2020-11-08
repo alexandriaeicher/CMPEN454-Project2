@@ -1,6 +1,7 @@
 function [EpipolarLines1, EpipolarLines2] = findEpipolarLines(...
     worldCoord3DPoints, cam1, cam1PixelCoords, cam2, cam2PixelCoords)
-filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2.mp4';
+filenamevue2mp4 = 'Subject4-Session3-24form-Full-Take4-Vue2_updated.mp4';
+filenamevue4mp4 = 'Subject4-Session3-24form-Full-Take4-Vue4_updated.mp4';
 
 
 x1 = []
@@ -135,6 +136,8 @@ Rmat1 = cam1.Rmat;
     
         [u,d] = eigs(A' * A,1,'SM');
         F = reshape(u,3,3);
+        
+        disp(A)
 
     %make F rank 2
     oldF = F;
@@ -150,47 +153,79 @@ Rmat1 = cam1.Rmat;
 
 % plot points2D2 and points2D4 onto frame
 vue2Video = VideoReader(filenamevue2mp4);
+vue4Video = VideoReader(filenamevue4mp4);
 vue2Video.CurrentTime = (700-1)*(50/100)/vue2Video.FrameRate;
+vue4Video.CurrentTime = (700-1)*(50/100)/vue4Video.FrameRate;
 vid2Frame = readFrame(vue2Video);
+vid4Frame = readFrame(vue4Video);
+
 
 colors =  'bgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmykbgrcmyk';
 
 figure(700);
 set(gcf, 'Position',  [100, 100, 1000, 400])
 
-
+EpipolarLines1 = F * [x1; y1; ones(size(x1))];
+EpipolarLines2 = F * [x2; y2; ones(size(x2))];
 
 [nr,nc,nb] = size(vid2Frame);
 
 L = F * [x1; y1; ones(size(x1))];
-subplot(1,2,1)
-         title('vue2');
-         image(vid2Frame);
-   
-%figure(700); clf; imagesc(vid2Frame); axis image;
 
-for i=1:length(L);
-    a = L(1,i); b = L(2,i); c=L(3,i);
-    if (abs(a) > (abs(b)))
-       ylo=0; yhi=nr; 
-       xlo = (-b * ylo - c) / a;
-       xhi = (-b * yhi - c) / a;
-       hold on
-       h=plot([xlo; xhi],[ylo; yhi]);
-       set(h,'Color',colors(i),'LineWidth',2);
-       hold off
-       drawnow;
-    else
-       xlo=0; xhi=nc; 
-       ylo = (-a * xlo - c) / b;
-       yhi = (-a * xhi - c) / b;
-       hold on
-       h=plot([xlo; xhi],[ylo; yhi],'b');
-       set(h,'Color',colors(i),'LineWidth',2);
-       hold off
-       drawnow;
-    end
-end
+
+%subplot(1,2,1)
+%         title('vue2');
+%         image(vid2Frame);
+
+%for i=1:length(L);
+%    a = L(1,i); b = L(2,i); c=L(3,i);
+%    if (abs(a) > (abs(b)))
+%       ylo=0; yhi=nr; 
+%       xlo = (-b * ylo - c) / a;
+%       xhi = (-b * yhi - c) / a;
+%       hold on
+%       h=plot([xlo; xhi],[ylo; yhi]);
+%       set(h,'Color',colors(i),'LineWidth',2);
+%       hold off
+%       drawnow;
+%    else
+%       xlo=0; xhi=nc; 
+%       ylo = (-a * xlo - c) / b;
+%       yhi = (-a * xhi - c) / b;
+%       hold on
+%       h=plot([xlo; xhi],[ylo; yhi],'b');
+%       set(h,'Color',colors(i),'LineWidth',2);
+%       hold off
+%       drawnow;
+%    end
+%end
+
+%L = F * [x2; y2; ones(size(x2))];
+%subplot(1,2,1)
+%         title('vue4');
+%         image(vid4Frame);
+%for i=1:length(L)
+%    a = L(1,i); b = L(2,i); c=L(3,i);
+%    if (abs(a) > (abs(b)))
+%       ylo=0; yhi=nr; 
+%       xlo = (-b * ylo - c) / a;
+%       xhi = (-b * yhi - c) / a;
+%       hold on
+%       h=plot([xlo; xhi],[ylo; yhi],'b');
+%       set(h,'Color',colors(i),'LineWidth',2);
+%       hold off
+%       drawnow;
+%    else
+%       xlo=0; xhi=nc; 
+%       ylo = (-a * xlo - c) / b;
+%       yhi = (-a * xhi - c) / b;
+%       hold on
+%       h=plot([xlo; xhi],[ylo; yhi],'b');
+%       set(h,'Color',colors(i),'LineWidth',2);
+%       hold off
+%       drawnow;
+%    end
+%end
 
 
 end

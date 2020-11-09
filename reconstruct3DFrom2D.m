@@ -38,7 +38,7 @@ function recovered3DPoints = reconstruct3DFrom2D(cam1, cam1PixelCoords, cam2, ca
         Pu1 = [cam1PixelCoords(1,i); cam1PixelCoords(2,i); cam1PixelCoords(3,i)];
         V1 = Rtranspose1 * Kinverse1 * Pu1;
         C1 = Rtranspose1 * T1;
-        Pw1 = V1 + C1;
+        Pw1 = V1 + C1; %viewing ray
         VUnit1 = V1 ./ norm(V1);
 
         Pu2 = [cam2PixelCoords(1,i); cam2PixelCoords(2,i); cam2PixelCoords(3,i)];
